@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Notas</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #064b70;
+            color: orange;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: white;
+            color: #333;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 15px #222;
+        }
+
+        h1 {
+            text-align: center;
+            color: #064b70;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .media {
+            background-color: #064b70;
+        }
+
+        .situacao {
+            background-color: #16803c;
+        }
+
+        .limpar {
+            background-color: #555;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #eee;
+            border-radius: 8px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .aprovado {
+            color: green;
+            font-weight: bold;
+        }
+
+        .reprovado {
+            color: red;
+            font-weight: bold;
+        }
+
+        .erro {
+            color: red;
+            font-weight: bold;
+        }
+
+        .rodape {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        a {
+            color: orange;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Sistema de Notas</h1>
+
+        <form id="formulario">
+
+            <label for="nome">Nome do aluno:</label>
+            <input type="text" id="nome"
+                   placeholder="Digite o nome do aluno">
+
+            <label for="nota1">Primeira nota:</label>
+            <input type="number" id="nota1"
+                   placeholder="Nota de 0 a 10"
+                   min="0" max="10" step="any">
+
+            <label for="nota2">Segunda nota:</label>
+            <input type="number" id="nota2"
+                   placeholder="Nota de 0 a 10"
+                   min="0" max="10" step="any">
+
+            <div class="botoes">
+                <button type="button" class="media"
+                        onclick="calcularMedia()">
+                    MÉDIA
+                </button>
+
+                <button type="button" class="situacao"
+                        onclick="mostrarSituacao()">
+                    SITUAÇÃO
+                </button>
+
+                <button type="button" class="limpar"
+                        onclick="limparCampos()">
+                    LIMPAR
+                </button>
+            </div>
+
+        </form>
+
+        <div id="resultado">
+            Preencha os dados e clique em MÉDIA.
+        </div>
+
+        <div class="rodape">
+            <p id="dataHora"></p>
+            <a href="sobre.html">Conheça esta página</a>
+        </div>
+
+    </div>
+
+    <script>
+        let mediaCalculada = false;
+        let media = 0;
+
+        function obterDados() {
+            let nome = document.getElementById("nome").value.trim();
+            let campo1 = document.getElementById("nota1").value;
+            let campo2 = document.getElementById("nota2").value;
+
+            let nota1 = Number(campo1);
+            let nota2 = Number(campo2);
+
+            if (nome === "" || campo1 === "" || campo2 === "") {
+                mostrarErro("Preencha o nome e as duas notas!");
+                return null;
+            }
+
+            if (!Number.isFinite(nota1) ||
+                !Number.isFinite(nota2) ||
+                nota1 < 0 || nota1 > 10 ||
+                nota2 < 0 || nota2 > 10) {
+
+                mostrarErro("Erro! As notas devem estar entre 0 e 10.");
+                return null;
+            }
+
+            return {
+                nome: nome,
+                nota1: nota1,
+                nota2: nota2
+            };
+        }
+
+        function calcularMedia() {
+            let aluno = obterDados();
+
+            if (aluno === null) {
+                mediaCalculada = false;
+                return;
+            }
+
+            media = (aluno.nota1 + aluno.nota2) / 2;
+            mediaCalculada = true;
+
+            document.getElementById("resultado").innerHTML =
+                "<strong>Nome do aluno:</strong> " + aluno.nome +
+                "<br><strong>Média obtida:</strong> " +
+                media.toFixed(2);
+        }
+
+        function mostrarSituacao() {
+            let aluno = obterDados();
+
+            if (aluno === null) {
+                mediaCalculada = false;
+                return;
+            }
+
+            media = (aluno.nota1 + aluno.nota2) / 2;
+            mediaCalculada = true;
+
+            let situacao;
+            let classe;
+
+            if (media >= 6) {
+                situacao = "APROVADO";
+                classe = "aprovado";
+            } else {
+                situacao = "REPROVADO";
+                classe = "reprovado";
+            }
+
+            document.getElementById("resultado").innerHTML =
+                "<strong>Nome do aluno:</strong> " + aluno.nome +
+                "<br><strong>Média obtida:</strong> " +
+                media.toFixed(2) +
+                "<br><strong>Situação:</strong> " +
+                '<span class="' + classe + '">' +
+                situacao + "</span>";
+        }
+
+        function mostrarErro(mensagem) {
+            document.getElementById("resultado").innerHTML =
+                '<span class="erro">' + mensagem + "</span>";
+        }
+
+        function limparCampos() {
+            document.getElementById("formulario").reset();
+
+            document.getElementById("resultado").innerHTML =
+                "Preencha os dados e obtenha o Resultado"
+            mediaCalculada = false;
+            media = 0;
+        }
+
+    </script>
+</body>
+</html>
